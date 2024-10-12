@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { WebUploader } from "@irys/web-upload";
 import { WebAptos } from "@irys/web-upload-aptos";
 
 // Radix UI Components
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/Header";
 import AdUploader from "@/components/AdUpload";
 

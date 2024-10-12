@@ -2,7 +2,7 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import { WebUploader } from "@irys/web-upload";
 import { WebAptos } from "@irys/web-upload-aptos";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import { useQueryClient } from "@tanstack/react-query";
+//import { useQueryClient } from "@tanstack/react-query";
 import { aptosClient } from "@/utils/aptosClient";
 import { toast } from "@/components/ui/use-toast";
 import { executePayAd } from "@/entry-functions/payAd";
@@ -13,17 +13,17 @@ import { CommittedTransactionResponse } from "@aptos-labs/ts-sdk";
 
 const AdUploader: React.FC = () => {
   const wallet = useWallet();
-  const queryClient = useQueryClient();
+  //const queryClient = useQueryClient();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [metadata, setMetadata] = useState({
+  const [metadata,] = useState({
     NumberOfDays: "",
   });
   const [uploading, setUploading] = useState<boolean>(false);
   const [uploadUrl, setUploadUrl] = useState<string | null>(null);
-  const [showSuccessPopup, setShowSuccessPopup] = useState<boolean>(false);
-  const [showErrorPopup, setShowErrorPopup] = useState<boolean>(false);
-  const [data, setData] = useState<CommittedTransactionResponse | null>(null);
+  const [showSuccessPopup] = useState<boolean>(false);
+  const [showErrorPopup] = useState<boolean>(false);
+  const [, setData] = useState<CommittedTransactionResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [amount, setAmount] = useState("");
   const { account, signAndSubmitTransaction } = useWallet();
@@ -36,12 +36,12 @@ const AdUploader: React.FC = () => {
     }
   };
 
-  const handleMetadataChange = (e: ChangeEvent<HTMLInputElement>) => {
+  /*const handleMetadataChange = (e: ChangeEvent<HTMLInputElement>) => {
     setMetadata((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
-  };
+  };*/
 
   const getIrysUploader = async () => {
     const irysUploader = await WebUploader(WebAptos)
