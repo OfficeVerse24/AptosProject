@@ -27,7 +27,13 @@ function App() {
   };
 
   return (
-    <>
+    <div style={{
+      backgroundImage: `url(/aptos2.png)`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      minHeight: '100vh'
+    }}>
       <Header />
       <div className="flex items-center justify-center flex-col">
         <Card className="mt-6">
@@ -40,12 +46,12 @@ function App() {
                     className="upload-button bg-blue-600 rounded hover:bg-blue-700"
                     style={{
                       padding: '10px 20px',
-                      color: '#fff', // Presuming the text color is white
+                      color: '#fff',
                       border: 'none',
                       borderRadius: '5px',
                       cursor: 'pointer',
                       fontSize: '16px',
-                      marginTop: '10px' // Ensures some space from the top
+                      marginTop: '10px'
                     }}
                   >
                     {irysStatus === "Not connected" ? "Connect Irys" : irysStatus}
@@ -54,12 +60,12 @@ function App() {
                 </div>
               </CardTitle>
             ) : (
-              <CardTitle>To get started, connect a wallet</CardTitle>
+              <CardTitle style={{ fontSize: "14px" }}>To get started, connect a wallet</CardTitle>
             )}
           </CardHeader>
         </Card>
       </div>
-    </>
+    </div>
   );
 }
 
