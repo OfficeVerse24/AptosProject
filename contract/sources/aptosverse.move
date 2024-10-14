@@ -39,7 +39,7 @@ module module_addr::aptosverse {
         });
 
         let ad_space = AdSpace {
-            price_per_day: 0,
+            price_per_day: 100000000,
             current_bid: 0,
             min_bid: 0,
             bidder: signer::address_of(account),
@@ -51,31 +51,35 @@ module module_addr::aptosverse {
         move_to(account, ad_space);
     }
 
-    fun add_id(owner: &signer, transaction_id: String, ad_name: String, min_bid: u64) {
-        // Create an ad space with a minimum bid
-        let ad_space = AdSpace {
-            price_per_day: 0,
-            current_bid: min_bid,
-            min_bid,
-            bidder: signer::address_of(owner),
-            start_time: timestamp::now_seconds(),
-            duration: 86400, // 1 day
-            transaction_id
-        };
-
-        move_to(owner, ad_space);
-    }
-
-
-    public entry fun pay (account: &signer, days: u64) acquires Pool {
+    /// Pay for the AD, add APT in Pool and update AdSpace
+    public entry fun pay (account: &signer, days: u64) acquires Pool, AdSpace {
         coin::register<AptosCoin>(account);
         let pool = borrow_global_mut<Pool>(@module_addr);
         let coin = coin::withdraw<AptosCoin>(account, days * 100000000);
         pool.fees = pool.fees + days * 100000000;
         coin::merge(&mut pool.coins, coin);
 
+        let ad_space = borrow_global_mut<AdSpace>(@module_addr);
+        let current_time = timestamp::now_seconds();
+        if (ad_space.bidder == signer::address_of(account))
+            {
+                // Update ad space duration
+                if (ad_space.start_time == 0 || current_time > ad_space.start_time + ad_space.duration) {
+                    ad_space.start_time = current_time;
+                    ad_space.duration = days * 86400; // 1 day = 86400 seconds
+                } else {
+                    // Extend existing duration
+                    ad_space.duration = ad_space.duration + (days * 86400);
+                };
+            } else {
+            // Update AdSpace for a new user
+            ad_space.bidder = signer::address_of(account);
+            ad_space.start_time = current_time;
+            ad_space.duration = days * 86400;
+        }
     }
 
+    /// Get amount in Pool
     public entry fun empty_pool (account: &signer) acquires Pool {
         assert!(signer::address_of(account) == @module_addr, error::permission_denied(ENOT_AUTHORIZED));
         coin::register<AptosCoin>(account);
@@ -84,6 +88,28 @@ module module_addr::aptosverse {
         let coin = coin::extract_all(&mut pool.coins);
         coin::deposit(signer::address_of(account), coin);
 
+    }
+
+    public entry fun place_bid(bidder: &signer, transaction_id: String, ad_name: String, bid_amount: u64) acquires AdSpace, Pool {
+        let ad_space = borrow_global_mut<AdSpace>(@module_addr);
+
+        // Ensure bid is higher than the current bid
+        assert!(bid_amount > ad_space.current_bid, error::invalid_argument(EINVALID_BID));
+
+        // Ensure ad space isn't being used (1 day must pass)
+        let current_time = timestamp::now_seconds();
+        assert!(current_time >= ad_space.start_time + ad_space.duration, error::permission_denied(EAD_IN_USE));
+
+        // Transfer Aptos tokens (APT) from bidder to the ad space
+        let pool = borrow_global_mut<Pool>(@module_addr);
+        let payment = coin::withdraw<AptosCoin>(bidder, bid_amount);
+        coin::merge(&mut pool.coins, payment);
+
+        // Update the ad space with the new bid
+        ad_space.current_bid = bid_amount;
+        ad_space.bidder = signer::address_of(bidder);
+        ad_space.start_time = current_time;
+        ad_space.transaction_id = transaction_id;
     }
 
     // Function to pay for an ad space for a certain number of days
@@ -112,6 +138,21 @@ module module_addr::aptosverse {
         };
     }
 
+    fun add_id(owner: &signer, transaction_id: String, ad_name: String, min_bid: u64) {
+        // Create an ad space with a minimum bid
+        let ad_space = AdSpace {
+            price_per_day: 100000000,
+            current_bid: min_bid,
+            min_bid,
+            bidder: signer::address_of(owner),
+            start_time: timestamp::now_seconds(),
+            duration: 86400, // 1 day
+            transaction_id
+        };
+
+        move_to(owner, ad_space);
+    }
+
     #[view]
     public fun current_ad() : String acquires AdSpace {
         let ad_space = borrow_global<AdSpace>(@module_addr);
@@ -127,24 +168,10 @@ module module_addr::aptosverse {
         result
     }
 
-
-    public entry fun place_bid(bidder: &signer, transaction_id: String, ad_name: String, bid_amount: u64) acquires AdSpace {
-        let ad_space = borrow_global_mut<AdSpace>(@module_addr);
-
-        // Ensure bid is higher than the current bid
-        assert!(bid_amount > ad_space.current_bid, error::invalid_argument(EINVALID_BID));
-
-        // Ensure ad space isn't being used (1 day must pass)
-        let current_time = timestamp::now_seconds();
-        assert!(current_time >= ad_space.start_time + ad_space.duration, error::permission_denied(EAD_IN_USE));
-
-        // Transfer Aptos tokens (APT) from bidder to the ad space
-        move_to(bidder, bid_amount);
-
-        // Update the ad space with the new bid
-        ad_space.current_bid = bid_amount;
-        ad_space.bidder = signer::address_of(bidder);
-        ad_space.start_time = current_time;
-        ad_space.transaction_id = transaction_id;
+    #[test]
+    public entry fun test_ad(account: &signer) acquires AdSpace, Pool {
+        init_module(account);
+        pay(account,  2);
+        empty_pool(account);
     }
 }

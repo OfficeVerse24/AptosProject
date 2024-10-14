@@ -1,5 +1,9 @@
 # Aptosverse
 
+<div align="center">
+  <img width="562" alt="screenshot" src="https://github.com/user-attachments/assets/676ddcb6-a473-40e5-b1c7-28df2bedaf84">
+</div>
+
 - **Summary**
     
     The "Aptosverse" is an ambitious metaverse project designed to encapsulate the entire Aptos blockchain ecosystem within a single, interconnected virtual space. As a comprehensive digital environment, the Aptosverse will offer users a wide array of interactive spaces, including coworking areas, event venues, training rooms, and decentralized finance (DeFi) hubs. This metaverse is envisioned as a dynamic platform that merges professional collaboration with financial innovation, providing users with unique opportunities to engage in staking, lending, and borrowing activities within dedicated DeFi rooms.
@@ -7,6 +11,25 @@
     Central to the Aptosverse experience are customizable spaces tailored for investors, protocol creators, and community leaders, who can design and curate their own virtual environments. These custom rooms will allow for the integration of games, staking boxes, and other incentive-driven activities, encouraging user engagement and fostering a thriving community.
     
     The Aptosverse is more than just a virtual space—it is a decentralized ecosystem that mirrors the versatility and innovation of the Aptos blockchain. By combining the collaborative spirit of coworking with the financial opportunities of DeFi and the entertainment of gaming, the Aptosverse aims to become a central hub for all Aptos users, from casual participants to institutional investors.
+
+- **Getting started**
+  
+     **1. Publish contract**
+  
+Run the below command to publish the contract on-chain:
+
+```npm run move:publish``` 
+
+This command will:
+
+1. Publish the contract to chain.
+   
+   This is where we deployed ours in Testnet (aptosverse): ```0x6fab0b20a4153d4bd77046408d2b7f05137e4985f61caa58f38c8d683e08a0d8```
+2. Setting the ```VITE_MODULE_ADDRESS``` in the ```.env file``` to set the contract object address.
+
+      **2. Run the app**
+   
+```npm run dev```
     
 - **Project Description**
     

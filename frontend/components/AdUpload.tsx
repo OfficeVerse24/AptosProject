@@ -73,7 +73,7 @@ const AdUploader: React.FC = () => {
       console.log(`Connected to Irys from ${irysUploader.address}`);
       console.log("Uploading ad");
 
-      if (totalSizeKiB >= 100) {
+      if (totalSizeKiB >= 1000) {
         const price = await irysUploader.getPrice(totalSize);
         await irysUploader.fund(price);
       }
